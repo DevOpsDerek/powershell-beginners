@@ -53,15 +53,15 @@ function Invoke-Calculate {
 
 function Test-IsMatch {
     param(
-        [string]$Input,
+        [string]$InputText,
         [string]$Pattern
     )
 
-    $Input -match $Pattern
+    $InputText -match $Pattern
 }
 
 Write-Output "Calculate example: 9 * 4 = $(Invoke-Calculate -A 9 -Operator '*' -B 4)"
-Write-Output "Regex example: $(Test-IsMatch -Input 'cat-123' -Pattern '^cat-\d+$')"
+Write-Output "Regex example: $(Test-IsMatch -InputText 'cat-123' -Pattern '^cat-\d+$')"
 
 # ---- FOLLOW ALONG ----
 # TODO 1: Try each supported operator in Invoke-Calculate.

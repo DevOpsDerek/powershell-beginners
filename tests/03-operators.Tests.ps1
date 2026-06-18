@@ -24,10 +24,10 @@ Describe 'Invoke-Calculate' {
 
 Describe 'Test-IsMatch' {
     It 'returns true when the pattern matches' {
-        Test-IsMatch -Input 'cat-123' -Pattern '^cat-\d+$' | Should -BeTrue
+        Test-IsMatch -InputText 'cat-123' -Pattern '^cat-\d+$' | Should -BeTrue
     }
 
     It 'returns false when the pattern does not match' {
-        Test-IsMatch -Input 'dog-abc' -Pattern '^cat-\d+$' | Should -BeFalse
+        Test-IsMatch -InputText 'dog-abc' -Pattern '^cat-\d+$' | Should -BeFalse
     }
 }

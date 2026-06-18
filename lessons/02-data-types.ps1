@@ -18,6 +18,7 @@ $today = [datetime]'2026-06-18'
 
 Write-Output "The variable `$language contains a $($language.GetType().Name)."
 Write-Output "The variable `$year contains a $($year.GetType().Name)."
+Write-Output "The variable `$version contains a $($version.GetType().Name)."
 Write-Output "The variable `$today contains a $($today.GetType().Name)."
 
 # Automatic conversion happens when PowerShell can safely interpret a value.
