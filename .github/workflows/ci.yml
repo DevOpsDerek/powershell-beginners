@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint (PSScriptAnalyzer)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module PSScriptAnalyzer -Scope CurrentUser -Force -ErrorAction Stop
+
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          $settings = "$env:GITHUB_WORKSPACE/PSScriptAnalyzerSettings.psd1"
+          $lessonResults = Invoke-ScriptAnalyzer -Path "$env:GITHUB_WORKSPACE/lessons" -Settings $settings -Recurse
+          $testResults   = Invoke-ScriptAnalyzer -Path "$env:GITHUB_WORKSPACE/tests"   -Settings $settings -Recurse
+
+          $allResults = @($lessonResults) + @($testResults)
+
+          if ($allResults.Count -gt 0) {
+              $allResults | Format-Table -AutoSize
+              Write-Error "PSScriptAnalyzer found $($allResults.Count) issue(s). See table above."
+              exit 1
+          }
+          else {
+              Write-Output "PSScriptAnalyzer: no issues found."
+          }
+
+  test:
+    name: Test (Pester)
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Pester
+        shell: pwsh
+        run: |
+          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+          Install-Module Pester -Scope CurrentUser -Force -SkipPublisherCheck -MinimumVersion 5.0.0 -ErrorAction Stop
+
+      - name: Run Pester tests
+        shell: pwsh
+        run: |
+          $config = New-PesterConfiguration
+          $config.Run.Path           = "$env:GITHUB_WORKSPACE/tests"
+          $config.Output.Verbosity   = 'Detailed'
+          $config.Run.Exit           = $true
+          $config.TestResult.Enabled = $true
+          $config.TestResult.OutputPath   = "$env:GITHUB_WORKSPACE/test-results.xml"
+          $config.TestResult.OutputFormat = 'NUnitXml'
+          Invoke-Pester -Configuration $config
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pester-test-results
+          path: test-results.xml

@@ -1,0 +1,13 @@
+# Test output
+test-results.xml
+tests/artifacts/
+
+# Editor
+.vscode/
+*.code-workspace
+
+# macOS
+.DS_Store
+
+# Temp files written by lessons
+*.tmp
