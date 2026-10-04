@@ -82,10 +82,12 @@ pwsh ./lint.ps1
 ## CI and Documentation Automation
 
 CI keeps separate PSScriptAnalyzer and Pester jobs, with tests running after
-lint succeeds. CI analyzes both `lessons/` and `tests/` using
-`PSScriptAnalyzerSettings.psd1` and fails on any diagnostic; the local
-`lint.ps1` helper fails only on errors. Pester 5 or later writes NUnit XML to
-`test-results.xml`, uploaded as `pester-test-results` even when tests fail.
+lint succeeds. CI uses the central PSScriptAnalyzer workflow, pinned to an exact
+module version, and analyzes PowerShell sources under the repository root using
+`PSScriptAnalyzerSettings.psd1`; it fails on Error and Warning diagnostics.
+The local `lint.ps1` helper uses the same settings and diagnostic threshold for
+`lessons/` and `tests/`. Pester 5 or later writes NUnit XML to `test-results.xml`,
+uploaded as `pester-test-results` even when tests fail.
 
 Automation validation comes from
 [`DevOpsDerek/workflows` at commit `dac4b81c298cb3ea6821ea312efa5375f42d5ccb`](https://github.com/DevOpsDerek/workflows/tree/dac4b81c298cb3ea6821ea312efa5375f42d5ccb).
