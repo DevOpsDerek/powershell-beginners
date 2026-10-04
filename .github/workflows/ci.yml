@@ -7,14 +7,25 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
+  automation:
+    name: Validate GitHub automation
+    uses: DevOpsDerek/workflows/.github/workflows/validate-agentic-workflows.yml@dac4b81c298cb3ea6821ea312efa5375f42d5ccb
+    with:
+      gh-aw-version: v0.89.21
+
   lint:
     name: Lint (PSScriptAnalyzer)
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Install PSScriptAnalyzer
         shell: pwsh
@@ -47,7 +58,9 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Install Pester
         shell: pwsh
@@ -69,7 +82,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: pester-test-results
           path: test-results.xml
