@@ -87,42 +87,27 @@ lint succeeds. CI analyzes both `lessons/` and `tests/` using
 `lint.ps1` helper fails only on errors. Pester 5 or later writes NUnit XML to
 `test-results.xml`, uploaded as `pester-test-results` even when tests fail.
 
-Automation validation and the shared documentation-upkeep component come from
+Automation validation comes from
 [`DevOpsDerek/workflows` at commit `dac4b81c298cb3ea6821ea312efa5375f42d5ccb`](https://github.com/DevOpsDerek/workflows/tree/dac4b81c298cb3ea6821ea312efa5375f42d5ccb).
 The catalog's checked-script helper does not support PowerShell, so it does
 not replace this course's test or lint implementation. The central validator
-lints Actions configuration, compiles gh-aw sources, and checks committed locks
-for drift. It is independent of the existing lint-to-test dependency.
+lints Actions configuration and, when gh-aw sources exist, compiles them and
+checks committed locks for drift. It is independent of the existing lint-to-test
+dependency. This repository currently has no gh-aw sources or locks.
 
-**Course documentation upkeep** is manual-only (`workflow_dispatch`), with a
-10-minute agent timeout. It reads course files without executing PowerShell
-and may propose at most one draft PR changing only `README.md` (one file,
-32 KB maximum patch). The agent has read-only GitHub access; writes are
-isolated to gh-aw safe outputs. No automated merge, release, deployment, or
-publishing is enabled. A human must review the course content and merge any
-proposal. The documentation check is `git diff --check`, plus a read-only
-lesson/test mapping inspection; it does not substitute for Pester or analyzer
-checks.
+**Manual course documentation upkeep is deferred.** The current gh-aw
+compiler (`v0.89.21`) hardcodes persisted write-capable checkout credentials
+in the PR safe-output job and has no supported override. The documentation
+agent source and generated lock have been removed rather than hand-editing a
+lock or introducing an insecure workaround.
 
-Before the first manual run, a maintainer must configure the
-`COPILOT_GITHUB_TOKEN` repository secret for the Copilot engine and enable
-GitHub Actions to create pull requests in repository settings. Do not provide
-the agent with a separate write-capable GitHub tools token. Run only from
-`main` after reviewing the source and generated lock. PRs created using the
-default `GITHUB_TOKEN` do not automatically trigger CI; a maintainer must
-manually run CI on the proposed branch before merging.
-
-The local Markdown source and its generated lock are committed together.
-To update them, install the matching gh-aw compiler and recompile:
-
-```bash
-gh extension install github/gh-aw --pin v0.89.21
-gh aw compile --validate --actionlint --no-check-update
-```
-
-Review both `.github/workflows/course-docs-upkeep.md` and its `.lock.yml`
-after compilation. Imports are SHA-pinned and inlined into the lock; changes
-to the central catalog require an explicit pin update and human review.
+Reconsider this capability only after the central compiler supports
+`persist-credentials: false` for the write job and credential handling is
+verified in regenerated output. Any future adoption must pin the central API,
+restrict proposals to bounded documentation-only draft PRs, preserve course
+examples without executing lesson scripts, and require human review and manual
+merge. No agent secret or PR-write setting is needed for the validator-only
+adoption; no automated merge, release, deployment, or publishing is enabled.
 
 ## Lesson Summary
 
