@@ -19,37 +19,11 @@ jobs:
 
   lint:
     name: Lint (PSScriptAnalyzer)
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-
-      - name: Install PSScriptAnalyzer
-        shell: pwsh
-        run: |
-          Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-          Install-Module PSScriptAnalyzer -Scope CurrentUser -Force -ErrorAction Stop
-
-      - name: Run PSScriptAnalyzer
-        shell: pwsh
-        run: |
-          $settings = "$env:GITHUB_WORKSPACE/PSScriptAnalyzerSettings.psd1"
-          $lessonResults = Invoke-ScriptAnalyzer -Path "$env:GITHUB_WORKSPACE/lessons" -Settings $settings -Recurse
-          $testResults   = Invoke-ScriptAnalyzer -Path "$env:GITHUB_WORKSPACE/tests"   -Settings $settings -Recurse
-
-          $allResults = @($lessonResults) + @($testResults)
-
-          if ($allResults.Count -gt 0) {
-              $allResults | Format-Table -AutoSize
-              Write-Error "PSScriptAnalyzer found $($allResults.Count) issue(s). See table above."
-              exit 1
-          }
-          else {
-              Write-Output "PSScriptAnalyzer: no issues found."
-          }
+    uses: DevOpsDerek/workflows/.github/workflows/lint/powershell.yml@cd4f07509e9efb0c498217c3be352e762bd0c149
+    with:
+      psscriptanalyzer-version: 1.24.0
+      working-directory: .
+      settings-path: PSScriptAnalyzerSettings.psd1
 
   test:
     name: Test (Pester)

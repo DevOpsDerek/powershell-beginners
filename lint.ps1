@@ -14,7 +14,7 @@ $paths = @(
     (Join-Path -Path $projectRoot -ChildPath 'tests')
 )
 
-$results = Invoke-ScriptAnalyzer -Path $paths -Settings $settingsPath -Recurse
+$results = Invoke-ScriptAnalyzer -Path $paths -Settings $settingsPath -Recurse -Severity Error, Warning
 
 if (-not $results) {
     Write-Output 'No ScriptAnalyzer issues found.'
@@ -25,7 +25,6 @@ $results |
     Sort-Object ScriptName, Line, Column |
     Format-Table Severity, RuleName, ScriptName, Line, Message -AutoSize
 
-$errorResults = $results | Where-Object Severity -eq 'Error'
-if ($errorResults) {
+if ($results) {
     exit 1
 }
