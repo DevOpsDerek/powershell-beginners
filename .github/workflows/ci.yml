@@ -19,7 +19,7 @@ jobs:
 
   lint:
     name: Lint (PSScriptAnalyzer)
-    uses: DevOpsDerek/workflows/.github/workflows/lint-powershell.yml@c4ac3847334c8944a48619ae4f3f0d622f4a074b
+    uses: DevOpsDerek/workflows/.github/workflows/lint-powershell.yml@35ec3f531b5eb0f0f42f232f23e1dc5735e36c35
     with:
       psscriptanalyzer-version: 1.24.0
       working-directory: .
